@@ -1,40 +1,50 @@
-const express = require('express');
-const connectDB=require("./config/database")
-const app=express();
+const express = require("express");
+const connectDB = require("./config/database");
+const app = express();
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
-const {adminAuth,userAuth}=require("./middlewares/auth");
+require("dotenv").config();
 
-app.use("/admin",adminAuth);
-app.get("/user/login",(req,res)=>{
-    res.send("user is logged in")
-});
-app.get("/user",userAuth,(req,res)=>{
-    res.send("User is Authorized")
-})
-app.get("/admin/getAllData",(req,res)=>{
-    res.send("All Data Sent");
-})
-app.get("/admin/deleteUser",(req,res)=>{
-    res.send("Deleted a user");
-})
-app.use("/",(req,res,next)=>{
-    // res.send("This is Home Page")
-    next();
-});
-app.use("/profile",(req,res)=>{
-    res.send("This is Profile Page")
-});
-app.use("/test",(req,res)=>{
-    res.send("Hello Hello Hello")
-});
+// app.use(cors({
+//   origin: "http://localhost:5173",
+//   credentials: true,
+// }));
+
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ['Content-Type', 'Authorization'], 
+    credentials: true,
+  })
+);
 
 
-connectDB().then(()=>{
-    console.log("Database connected successfully....")
-    app.listen(7777,()=>{
-        console.log("Server is successfully listening on port 7777....")
-    })
-}).catch((err)=>{
-    console.log("Database cannot be connected")
-})
+app.use(cookieParser());
+app.use(express.json());
 
+const authRouter = require("./routes/auth");
+const profileRouter = require("./routes/profile");
+const requestRouter = require("./routes/request");
+const userRouter = require("./routes/user");
+
+app.use("/", authRouter);
+app.use("/", profileRouter);
+app.use("/", requestRouter);
+app.use("/", userRouter);
+
+connectDB()
+.then(() => {
+  app.get("/", (req, res) => {
+    res.send("API WORKING");
+  });
+    console.log("Database connection established...");
+    app.listen(process.env.PORT, () => {
+      console.log("Server is listening on port 3000...");
+    });
+  })
+  .catch((err) => {
+    console.error("Database cannot be connected!!");
+  });
+  
