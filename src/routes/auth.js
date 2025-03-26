@@ -53,9 +53,10 @@ authRouter.post("/login", async (req, res) => {
 
       res.cookie("token", token, {
         expires: new Date(Date.now() + 8 * 3600000),
+        secure: process.env.NODE_ENV === "production",
         httpOnly:true,
-        sameSite:"None",
-        secure:true,
+        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+        // secure:true,
       });
       res.send(user);
     } else {
