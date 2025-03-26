@@ -97,11 +97,11 @@ const initializeSocket = (server) => {
     });
 
 
-    socket.on("checkRoom", (roomId, callback) => {
-      const room = io.sockets.adapter.rooms.get(roomId);
-      const isActive = room && room.size > 0;
-      callback(isActive);
-  });
+//     socket.on("checkRoom", (roomId, callback) => {
+//       const room = io.sockets.adapter.rooms.get(roomId);
+//       const isActive = room && room.size > 0;
+//       callback(isActive);
+//   });
 
 
     socket.on("disconnect", () => {});
